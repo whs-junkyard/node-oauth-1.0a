@@ -13,7 +13,7 @@ const Utils = {
 	 * @return {String} Encoded string
 	 */
 	percentEncode: (str) => {
-		return querystring.escape(str)
+		return encodeURIComponent(str)
 			.replace(/\!/g, '%21')
 			.replace(/\*/g, '%2A')
 			.replace(/\'/g, '%27')
@@ -75,7 +75,7 @@ const Utils = {
 	 * @param {string} [sep="&"] Separator between items
 	 * @param {string} [eq="="] Separator between key and value
 	 * @param {Object} [options]
-	 * @param {Function} [options.encodeURIComponent=querystring.escape]
+	 * @param {Function} [options.encodeURIComponent=encodeURIComponent]
 	 * Key and value escaping algorithm
 	 * @return {string} Query string
 	 */
@@ -83,7 +83,7 @@ const Utils = {
 		sep = sep || '&';
 		eq = eq || '=';
 		options = Object.assign({
-			encodeURIComponent: querystring.escape
+			encodeURIComponent: encodeURIComponent
 		}, options);
 
 		let out = [];
