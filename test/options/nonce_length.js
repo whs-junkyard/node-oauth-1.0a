@@ -3,7 +3,7 @@ var expect;
 //Node.js
 if(typeof(module) !== 'undefined' && typeof(exports) !== 'undefined') {
     expect = require('chai').expect;
-    var OAuth = require('../../oauth-1.0a');
+    var OAuth = require('../../');
 } else { //Browser
     expect = chai.expect;
 }
@@ -12,23 +12,23 @@ if(typeof(module) !== 'undefined' && typeof(exports) !== 'undefined') {
 
 describe("nonce_length option", function() {
     describe("default (32)", function() {
-        var oauth = OAuth({
+        var oauth = new OAuth({
             consumer: {}
         });
 
         it("nonce length should be 32", function() {
-            expect(oauth.getNonce().length).to.equal(32);
+            expect(oauth._getNonce().length).to.equal(32);
         });
     });
 
     describe("length 100", function() {
-        var oauth = OAuth({
+        var oauth = new OAuth({
             consumer: {},
             nonce_length: 100
         });
 
         it("nonce length should be 100", function() {
-            expect(oauth.getNonce().length).to.equal(100);
+            expect(oauth._getNonce().length).to.equal(100);
         });
     });
 
@@ -41,7 +41,7 @@ describe("nonce_length option", function() {
         });
 
         it("nonce length should be correct", function() {
-            expect(oauth.getNonce().length).to.equal(random);
+            expect(oauth._getNonce().length).to.equal(random);
         });
     });
 });

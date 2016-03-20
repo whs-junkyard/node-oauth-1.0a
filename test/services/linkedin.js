@@ -1,6 +1,6 @@
 var expect  = require('chai').expect;
 var Request = require('request');
-var OAuth   = require('../../oauth-1.0a');
+var OAuth   = require('../../');
 
 /*
     Can not use Header

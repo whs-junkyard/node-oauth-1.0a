@@ -1,47 +1,19 @@
-oauth-1.0a ![codeship][codeship-img]
-==========
-
-[![Join the chat at https://gitter.im/ddo/oauth-1.0a](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ddo/oauth-1.0a?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
-[![version][version-img]][version-url]
-[![download][download-img]][download-url]
-
-[![coverage][coverage-img]][coverage-url]
-[![climate][climate-img]][climate-url]
-
-[![dependency][dependency-img]][dependency-url]
-
-[codeship-img]: https://www.codeship.io/projects/4388a200-ac85-0131-b0cb-7e8dce60f53f/status
-[codeship-url]: https://www.codeship.io/projects/4388a200-ac85-0131-b0cb-7e8dce60f53f/status
-
-[download-img]: https://img.shields.io/npm/dm/oauth-1.0a.svg?style=flat-square
-[download-url]: https://www.npmjs.com/package/oauth-1.0a
-
-[version-img]: https://img.shields.io/npm/v/oauth-1.0a.svg?style=flat-square
-[version-url]: https://www.npmjs.com/package/oauth-1.0a
-
-[dependency-img]: https://img.shields.io/david/ddo/oauth-1.0a.svg?style=flat-square
-[dependency-url]: https://david-dm.org/ddo/oauth-1.0a
-
-[coverage-img]: https://img.shields.io/coveralls/ddo/oauth-1.0a/master.svg?style=flat-square
-[coverage-url]: https://coveralls.io/r/ddo/oauth-1.0a?branch=master
-
-[climate-img]: https://img.shields.io/codeclimate/github/ddo/oauth-1.0a.svg?style=flat-square
-[climate-url]: https://codeclimate.com/github/ddo/oauth-1.0a
+# node-oauth-1.0a
 
 OAuth 1.0a Request Authorization for **Node** and **Browser**
 
 Send OAuth request with your favorite HTTP client ([request](https://github.com/mikeal/request), [jQuery.ajax](http://api.jquery.com/jQuery.ajax/)...)
 
-No more headache about OAuth 1.0a's stuff or "oauth_consumer_key, oauth_nonce, oauth_signature...." parameters, just use your familiar HTTP client to send OAuth requests.
+## Difference to oauth-1.0a
 
-Tested on some popular OAuth 1.0a services:
-
-* Twitter
-* Flickr
-* Bitbucket
-* Linkedin
-* Openbankproject(HMAC-SHA256)
+- The code is broken down to multiple files and rewritten to a subset of ES6.
+  - When node and evergreen browsers starts shipping full ES6 support it is
+    expected that the code will change to full ES6.
+- Use libraries instead of shipping with some common algorithms.
+- Large parts of the API are made private
+- The public API should be compatible with some changes
+  - The constructor must be called with `new`.
+  - `authorize` and its inner methods no longer mutate input.
 
 ## Quick Start
 
@@ -69,7 +41,7 @@ oauth.toHeader(oauth_data);
 
 ###Node.js
     $ npm install oauth-1.0a
-    
+
 ###Browser
 Download oauth-1.0a.js [here](https://raw.githubusercontent.com/ddo/oauth-1.0a/master/oauth-1.0a.js)
 

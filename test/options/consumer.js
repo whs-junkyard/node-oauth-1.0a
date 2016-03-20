@@ -3,7 +3,7 @@ var expect;
 //Node.js
 if(typeof(module) !== 'undefined' && typeof(exports) !== 'undefined') {
     expect = require('chai').expect;
-    var OAuth = require('../../oauth-1.0a');
+    var OAuth = require('../../');
 } else { //Browser
     expect = chai.expect;
 }
@@ -14,7 +14,7 @@ describe("consumer option", function() {
     describe("required option", function() {
         it("should throw error on undefined", function() {
             expect(function() {
-                oauth = OAuth();
+                oauth = new OAuth();
             }).to.throw('consumer option is required');
         });
     });

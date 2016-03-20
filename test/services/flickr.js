@@ -1,6 +1,6 @@
 var expect  = require('chai').expect;
 var Request = require('request');
-var OAuth   = require('../../oauth-1.0a');
+var OAuth   = require('../../');
 
 describe("Flickr Personal Consumer", function() {
     this.timeout(10000);
@@ -72,7 +72,7 @@ describe("Flickr Personal Consumer", function() {
             });
         });
     });
-    
+
     /*
         Need to get token from Request Token
         And oauth_verifier after pass authorize on website
@@ -115,7 +115,7 @@ describe("Flickr Personal Consumer", function() {
             });
         });
     });
-    
+
     /*
         Need to get token from Access Token
     */

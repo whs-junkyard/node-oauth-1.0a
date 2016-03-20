@@ -3,7 +3,7 @@ var expect;
 //Node.js
 if(typeof(module) !== 'undefined' && typeof(exports) !== 'undefined') {
     expect = require('chai').expect;
-    var OAuth = require('../../oauth-1.0a');
+    var OAuth = require('../../');
 } else { //Browser
     expect = chai.expect;
 }
@@ -19,12 +19,12 @@ describe("Signature method", function() {
         });
 
         //overide for testing only !!!
-        oauth.getTimeStamp = function() {
+        oauth._getTimeStamp = function() {
             return 1445951836;
         };
 
         //overide for testing only !!!
-        oauth.getNonce = function(length) {
+        oauth._getNonce = function(length) {
             return 'tKOQtKan8PHIrIoOlrl17zHkZQ2H5CsP';
         };
 
