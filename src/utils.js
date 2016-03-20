@@ -3,11 +3,14 @@
 const querystring = require('querystring');
 const url = require('url');
 
+/**
+ * @private
+ */
 const Utils = {
 	/**
-	 * Percent Encode
-	 * @param  {String} str
-	 * @return {String} percent encoded string
+	 * Escape string according to [OAuth 1.0 section 3.6]{@link https://tools.ietf.org/html/rfc5849#section-3.6}
+	 * @param {String} str String to encode
+	 * @return {String} Encoded string
 	 */
 	percentEncode: (str) => {
 		return querystring.escape(str)
@@ -19,10 +22,10 @@ const Utils = {
 	},
 
 	/**
-	 * Get OAuth data as Header
-	 * @param  {Object} oauth_data
-	 * @param  {string} Separator between items, defaults to ", "
-	 * @return {String} Header data key - value
+	 * Build OAuth Authorization header
+	 * @param {Object} oauth_data
+	 * @param {string} [separator=", "] Separator between items
+	 * @return {String} Authorization header string
 	 */
 	toHeader: (oauth_data, separator) => {
 		separator = separator || ', ';
@@ -43,18 +46,18 @@ const Utils = {
 	},
 
 	/**
-	 * Get data from url
-	 * -> merge with oauth data
-	 * -> percent encode key & value
-	 * -> sort
+	 * Build parameter string part of the signing string.
 	 *
-	 * @param  {Object} request data
-	 * @param  {Object} OAuth data
-	 * @return {Object} Parameter string data
+	 * Parameter string consists of all request parameters and OAuth data
+	 * sorted by key alphabetically.
+	 *
+	 * @param  {Object} request
+	 * @param  {Object} oauth_data
+	 * @return {Object} string Parameter string
 	 */
 	getParameterString: (request, oauth_data) => {
 		let parsedUrl = url.parse(request.url, true);
-		let data = Object.assign({}, parsedUrl.query, request.data, oauth_data);
+		let data = Object.assign({}, parsedUrl.query, request.data || {}, oauth_data);
 		data = Utils.toSortedMap(data);
 
 		return Utils.stringifyQueryMap(data, '&', '=', {
@@ -63,16 +66,17 @@ const Utils = {
 	},
 
 	/**
-	 * Encode
+	 * Build query string from {@link Map}
 	 *
-	 * This method should be the same as querystring.stringify
-	 * but accept a Map<string, string|Array> instead of Object
+	 * This method should be the same as {@link querystring#stringify}
+	 * but accept a `Map<string, string|Array>` instead of {@link Object}
 	 *
-	 * @param {Map<string, string|Array>} Input
-	 * @param {string} Separator between items, default to &
-	 * @param {string} Separator between key and value, default to =
-	 * @param {Object} Options. Supported are encodeURIComponent to change URL
-	                   encoding algorithm.
+	 * @param {Map.<string, string|Array>} obj Input
+	 * @param {string} [sep="&"] Separator between items
+	 * @param {string} [eq="="] Separator between key and value
+	 * @param {Object} [options]
+	 * @param {Function} [options.encodeURIComponent=querystring.escape]
+	 * Key and value escaping algorithm
 	 * @return {string} Query string
 	 */
 	stringifyQueryMap: (obj, sep, eq, options) => {
@@ -104,7 +108,7 @@ const Utils = {
 	/**
 	 * Strip query string from URL
 	 *
-	 * @param  {String} URL to strip
+	 * @param  {String} url URL to strip
 	 * @return {String} Stripped URL
 	 */
 	getBaseUrl: (url) => {
@@ -114,13 +118,11 @@ const Utils = {
 	/**
 	 * Return a ES6 Map with same key/value pairs as object.
 	 *
-	 * The pairs insertion order is sorted by key, so iterators would yield
-	 * pairs in the same sequence.
-	 * Normal object does not guaranteed any iteration order, so it cannot be
-	 * used.
+	 * Iterating over this map would yield key/value pairs in alphabetical
+	 * order of keys.
 	 *
-	 * @param {Object} Object to sort
-	 * @return {Map} Result
+	 * @param {Object} object Object to sort
+	 * @return {Map}
 	 */
 	toSortedMap: (object) => {
 		let keys = Object.keys(object);
