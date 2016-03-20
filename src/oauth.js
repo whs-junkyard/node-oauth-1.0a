@@ -22,6 +22,8 @@ class OAuth{
 			nonce_length: 32,
 			signature_method: 'HMAC-SHA1',
 			version: '1.0',
+			last_ampersand: true,
+			parameter_seperator: ', ',
 		}, opts);
 	}
 
@@ -95,7 +97,7 @@ class OAuth{
 	 */
 	toHeader(oauth_data){
 	    return {
-			Authorization: Utils.toHeader(oauth_data)
+			Authorization: Utils.toHeader(oauth_data, this._opts.parameter_seperator)
 		};
 	}
 
@@ -140,7 +142,9 @@ class OAuth{
 			this._opts.consumer.secret
 		];
 
-		out.push(token_secret || '');
+		if(this._opts.last_ampersand || token_secret){
+			out.push(token_secret || '');
+		}
 
 		return out.map(item => Utils.percentEncode(item))
 			.join('&');
