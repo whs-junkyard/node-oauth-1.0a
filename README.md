@@ -2,7 +2,22 @@
 
 OAuth 1.0a Request Authorization for **Node** and **Browser**
 
-Send OAuth request with your favorite HTTP client ([request](https://github.com/mikeal/request), [jQuery.ajax](http://api.jquery.com/jQuery.ajax/)...)
+Send OAuth request with your favorite HTTP client
+([request](https://github.com/mikeal/request),
+[jQuery.ajax](http://api.jquery.com/jQuery.ajax/)...) or
+[fetch](https://fetch.spec.whatwg.org))
+
+## Breaking change
+
+- v2.0.0
+  - A bug has been discovered in `authorize`. As it no longer mutate input,
+    the input string no longer get escaped correctly per OAuth spec.
+    To remedy this:
+    - If you build POST body yourself, use the `buildQueryString` method
+      instead of `querystring.encode`.
+    - Otherwise, make sure that your parameters are encoded with
+      `percentEncode` instead of `encodeURIComponent`. It is available at
+      `require('node-oauth-1.0a/src/utils').percentEncode`.
 
 ## Difference to oauth-1.0a
 

@@ -40,7 +40,7 @@ const Utils = require('./utils');
  * request({
  * 	url: request_data.url,
  * 	method: request_data.method,
- * 	form: formData
+ * 	form: oauth.buildQueryString(formData)
  * }, function(error, response, body) {
  * 	// Process data
  * });
@@ -49,7 +49,7 @@ const Utils = require('./utils');
  * request({
  * 	url: request_data.url,
  * 	method: request_data.method,
- * 	form: request_data.data,
+ * 	form: oauth.buildQueryString(request_data.data),
  * 	headers: {
  * 		Authorization: oauth.getHeader(request_data, token)
  * 	}
@@ -285,6 +285,21 @@ class OAuth{
 
 		return out.map(item => Utils.percentEncode(item))
 			.join('&');
+	}
+
+	/**
+	 * Build a query string similar to {@link querystring.encode}, but
+	 * escape things correctly per OAuth spec
+	 *
+	 * @param  {Object} data Object to encode as query string
+	 * @return {string} Query string object
+	 */
+	buildQueryString(data){
+		data = Utils.toSortedMap(data);
+
+		return Utils.stringifyQueryMap(data, '&', '=', {
+			encodeURIComponent: Utils.percentEncode
+		});
 	}
 
 	/**
