@@ -9,6 +9,8 @@ Send OAuth request with your favorite HTTP client
 
 ## Breaking change
 
+- v3.0.0
+  - Crypto library changed to node's `crypto`
 - v2.0.0
   - A bug has been discovered in `authorize`. As it no longer mutate input,
     the input string no longer get escaped correctly per OAuth spec.
