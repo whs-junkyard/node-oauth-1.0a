@@ -16,7 +16,7 @@ const Utils = require('./utils');
  * let oauth = new OAuth({
  * 	consumer: {
  * 		public: '<consumer key>',
- * 		private: '<consumer secret>',
+ * 		secret: '<consumer secret>',
  * 	}
  * });
  * let request_data = {
