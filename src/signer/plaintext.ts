@@ -4,7 +4,7 @@
  * @param {string} key         signing key
  */
 export function sign(base_string: string, key: string) {
-	return key;
+    return key;
 }
 
 export default sign; // tslint:disable-line

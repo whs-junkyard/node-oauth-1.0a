@@ -6,7 +6,7 @@ import * as crypto from "crypto";
  * @param {string} key         signing key
  */
 export function sign(base_string: string, key: string) {
-	return crypto.createHmac('sha1', key).update(base_string).digest('base64')
-};
+    return crypto.createHmac('sha1', key).update(base_string).digest('base64');
+}
 
-export default sign;
+export default sign; // tslint:disable-line
