@@ -1,11 +1,9 @@
-'use strict';
-
 let expect;
 
 //Node.js
 if(typeof(module) !== 'undefined' && typeof(exports) !== 'undefined') {
     expect = require('chai').expect;
-    var Signer = require('../../src/signer');
+    var Signer = require('../../dist/signer').default;
 } else { //Browser
     expect = chai.expect;
 }
