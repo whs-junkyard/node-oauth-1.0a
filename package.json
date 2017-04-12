@@ -15,7 +15,8 @@
     "authorize",
     "signature",
     "nonce",
-    "consumer"
+    "consumer",
+    "typescript"
   ],
   "license": "MIT",
   "devDependencies": {
