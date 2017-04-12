@@ -1,10 +1,8 @@
-'use strict';
+import * as querystring from "querystring";
+import * as randomstring from "randomstring";
 
-const querystring = require('querystring');
-const randomstring = require('randomstring');
-
-const Signer = require('./signer');
-const Utils = require('./utils');
+import {Signer, SignerType} from "./signer";
+import Utils from "./utils";
 
 /**
  * OAuth 1.0a signature generator
@@ -58,7 +56,10 @@ const Utils = require('./utils');
  * });
  *
  */
-class OAuth{
+export class OAuth {
+	private _opts: OAuthOpts;
+	private _signer: Function;
+
 	/**
 	 * @param {Object} opts
 	 * @param {Object} opts.consumer Consumer token (required)
@@ -66,7 +67,7 @@ class OAuth{
 	 * @param {string} opts.consumer.private Consumer secret
 	 * @param {number} [opts.nonce_length=32] Length of nonce (oauth_nonce)
 	 * @param {string} [opts.signature_method="HMAC-SHA1"] Signing algorithm
-	 * Supported algorithm:
+	 * Supported algorithms:
 	 * - `HMAC-SHA1`
 	 * - `PLAINTEXT`
 	 * - `HMAC-SHA256`
@@ -76,20 +77,18 @@ class OAuth{
 	 * @param {boolean} [opts.last_ampersand=true] Whether to append trailing
 	 * ampersand to signing key
 	 */
-	constructor(opts){
-		opts = opts || {}
-
+	constructor(opts: Partial<OAuthOpts> = {}) {
 		if(!opts.consumer) {
 			throw new Error('consumer option is required');
 		}
 
-		this._opts = Object.assign({
+		this._opts = <OAuthOpts>Object.assign({
 			nonce_length: 32,
 			signature_method: 'HMAC-SHA1',
 			version: '1.0',
 			last_ampersand: true,
-			parameter_seperator: ', ',
-		}, opts);
+			parameter_separator: ', ',
+		}, opts, {consumer: opts.consumer});
 	}
 
 	/**
@@ -99,7 +98,7 @@ class OAuth{
 	 * @param {string} key HMAC key
 	 * @return {string} Signed string in base64 format
 	 */
-	_sign(str, key){
+	_sign(str: string, key: string){
 		if(!this._signer){
 			// Cache the signer
 			this._signer = this._getSigner(this._opts.signature_method);
@@ -110,14 +109,14 @@ class OAuth{
 	/**
 	 * Retrieve a signing algorithm by algorithm name
 	 * @private
-	 * @param {string} type Algorithm name
+	 * @param {SignerType} type Algorithm name
 	 * @throws {Error} Algorithm is not supported
 	 * @return {Function} Algorithm implementation
 	 */
-	_getSigner(type){
-		if(Signer[type]){
+	_getSigner(type: SignerType){
+		if (Signer[type]) {
 			return Signer[type];
-		}else{
+		} else {
 			let supported = JSON.stringify(Object.keys(Signer));
 			throw new Error(`Hash type ${type} not supported. Supported: ${supported}`);
 		}
@@ -162,10 +161,10 @@ class OAuth{
 	 * 	"oauth_signature": "tnnArxj06cWHq44gCs1OSKk/jLY="
 	 * }
 	 */
-	authorize(request, token){
+	authorize(request: RequestOpts, token?: Token){
 		token = token || {};
 
-		let oauth_data = this._getOAuthData(token);
+		let oauth_data: OAuthData = this._getOAuthData(token);
 		oauth_data.oauth_signature = this.getSignature(request, token.secret, oauth_data);
 
 		return oauth_data;
@@ -184,9 +183,9 @@ class OAuth{
 	 *
 	 * @return {string} Authorization header value
 	 */
-	getHeader(request, token){
+	getHeader(request: RequestOpts, token: Token){
 		let oauth_data = this.authorize(request, token);
-		return Utils.toHeader(oauth_data, this._opts.parameter_seperator);
+		return Utils.toHeader(oauth_data, this._opts.parameter_separator);
 	}
 
 	/**
@@ -197,9 +196,9 @@ class OAuth{
 	 * @deprecated This method is preserved for backward compatibility with
 	 * oauth-1.0a. New implementors should use {@link OAuth#getHeader} instead.
 	 */
-	toHeader(oauth_data){
+	toHeader(oauth_data: OAuthData){
 	    return {
-			Authorization: Utils.toHeader(oauth_data, this._opts.parameter_seperator)
+			Authorization: Utils.toHeader(oauth_data, this._opts.parameter_separator)
 		};
 	}
 
@@ -211,9 +210,7 @@ class OAuth{
 	 * @param {string} request.url URL
 	 * @param {Object} request.data Post data as a key, value map
 	 *
-	 * @param {Object} [token={}] User token
-	 * @param {string} [token.key] Token public key
-	 * @param {string} [token.secret] Token secret key
+	 * @param {string} token signing token
 	 *
 	 * @param {Object} oauth_data
 	 * @param {string} oauth_data.oauth_consumer_key Consumer key
@@ -226,7 +223,7 @@ class OAuth{
 	 *
 	 * @return {string} Value of oauth_signature field
 	 */
-	getSignature(request, token, oauth_data){
+	getSignature(request: RequestOpts, token: string | undefined, oauth_data: OAuthData){
 		return this._sign(
 			this._getBaseString(request, oauth_data),
 			this._getSigningKey(token)
@@ -250,13 +247,13 @@ class OAuth{
 	 * 	"oauth_token": "370773112-GmHxMAgYyLbNEtIKZeRNFsMKPR9EyMZeS9weJAEb",
 	 * }
 	 */
-	_getOAuthData(token){
-		let oauth_data = {
+	_getOAuthData(token: Token): OAuthData {
+		let oauth_data: OAuthData = {
 			oauth_consumer_key: this._opts.consumer.public,
 			oauth_nonce: this._getNonce(),
 			oauth_signature_method: this._opts.signature_method,
 			oauth_timestamp: this._getTimeStamp(),
-			oauth_version: this._opts.version
+			oauth_version: this._opts.version,
 		};
 
 		if(token && token.public){
@@ -276,7 +273,7 @@ class OAuth{
 	 * @param {Object} oauth_data OAuth parameters
 	 * @return {string} Authorization string
 	 */
-	_getBaseString(request, oauth_data){
+	_getBaseString(request: RequestOpts, oauth_data: any){
 		let out = [
 			request.method.toUpperCase(),
 			Utils.getBaseUrl(request.url),
@@ -294,7 +291,7 @@ class OAuth{
 	 * @param  {Object} data Object to encode as query string
 	 * @return {string} Query string object
 	 */
-	buildQueryString(data){
+	buildQueryString(data: any){
 		data = Utils.toSortedMap(data);
 
 		return Utils.stringifyQueryMap(data, '&', '=', {
@@ -315,7 +312,7 @@ class OAuth{
 	 * @param  {string} [token_secret] User token secret
 	 * @return {string} Signing Key
 	 */
-	_getSigningKey(token_secret){
+	_getSigningKey(token_secret?: string){
 		let out = [
 			this._opts.consumer.secret
 		];
@@ -341,7 +338,7 @@ class OAuth{
 	 */
 	_getNonce(){
 		return randomstring.generate({
-			length: this._opts.nonce_length || 32,
+			length: this._opts.nonce_length || 32, // tslint:disable-line
 			charset: 'alphanumeric'
 		});
 	}
@@ -352,8 +349,48 @@ class OAuth{
 	 * @return {number} Current time in seconds
 	 */
 	_getTimeStamp(){
-		return parseInt(new Date().getTime()/1000, 10);
+		return Math.floor(Date.now() / 1000); // tslint:disable-line
 	}
 }
 
-module.exports = OAuth;
+export default OAuth;
+
+export interface OAuthOpts {
+	consumer: OAuthConsumer;
+	nonce_length: number;
+	signature_method: SignerType;
+	version: string;
+	last_ampersand: boolean;
+	parameter_separator: string;
+}
+
+export interface OAuthConsumer {
+	public: string; // consumer key
+	secret: string; // shared secret
+}
+
+export interface RequestOpts {
+	method: string; // HTTP method
+	url: string;    // URL
+	data?: any; // Post data as a key, value map
+}
+
+export interface OAuthData {
+	oauth_consumer_key: string;  // Consumer key
+	oauth_nonce: string;         // Nonce string
+	// Signing algorithm name
+	// (only for building signing string, the actual signing algorithm is set by
+	// class {@link OAuth#constructor} arguments)
+	oauth_signature_method: SignerType;
+	oauth_timestamp: number; // Current Unix time in seconds
+	oauth_version: string;   // OAuth version
+	oauth_signature?: string;  // Signature of the request data
+	oauth_token?: string;
+}
+
+export interface Token {
+	key?: string;    // Token key
+	public?: string; // Token public key
+	secret?: string; // Token secret
+}
+

@@ -3,9 +3,10 @@
   "version": "3.0.0",
   "description": "OAuth 1.0a Request Authorization for Node and Browser.",
   "scripts": {
+    "build": "tsc --project .",
     "test": "make test"
   },
-  "main": "src/oauth.js",
+  "main": "index.js",
   "repository": "https://github.com/whs/node-oauth-1.0a.git",
   "keywords": [
     "oauth",
@@ -18,13 +19,28 @@
   ],
   "license": "MIT",
   "devDependencies": {
-    "mocha": "~2.4.5",
-    "chai": "~3.5.0",
-    "request": "~2.69.0",
-    "istanbul": "^0.4.2",
-    "coveralls": "^2.10.0"
+    "@types/chai": "^3.5.0",
+    "@types/istanbul": "^0.4.29",
+    "@types/mocha": "^2.2.40",
+    "@types/node": "^7.0.12",
+    "@types/randomstring": "^1.1.5",
+    "@types/request": "0.0.42",
+    "chai": "^3.5.0",
+    "coveralls": "^2.13.0",
+    "istanbul": "^0.4.5",
+    "mocha": "^3.2.0",
+    "request": "^2.81.0",
+    "tslint": "^5.1.0",
+    "typescript": "^2.2.2"
   },
   "dependencies": {
-    "randomstring": "^1.1.4"
-  }
+    "randomstring": "^1.1.5"
+  },
+  "engines": {
+    "node": ">= 6"
+  },
+  "files": [
+    "dist",
+    "index.js"
+  ]
 }

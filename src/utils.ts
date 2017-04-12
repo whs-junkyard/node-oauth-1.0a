@@ -1,25 +1,20 @@
-'use strict';
-
-const querystring = require('querystring');
-const url = require('url');
+import * as querystring from "querystring";
+import * as url from "url";
 
 /**
  * @private
  */
-const Utils = {
+export namespace Utils {
 	/**
 	 * Escape string according to [OAuth 1.0 section 3.6]{@link https://tools.ietf.org/html/rfc5849#section-3.6}
 	 * @param {String} str String to encode
 	 * @return {String} Encoded string
 	 */
-	percentEncode: (str) => {
-		return encodeURIComponent(str)
-			.replace(/\!/g, '%21')
-			.replace(/\*/g, '%2A')
-			.replace(/\'/g, '%27')
-			.replace(/\(/g, '%28')
-			.replace(/\)/g, '%29');
-	},
+	export function percentEncode(str: string) {
+		return encodeURIComponent(str).replace(/[!'()*]/g, (c) =>
+            `%${c.charCodeAt(0).toString(16).toUpperCase()}` // tslint:disable-line
+        );
+	}
 
 	/**
 	 * Build OAuth Authorization header
@@ -27,7 +22,7 @@ const Utils = {
 	 * @param {string} [separator=", "] Separator between items
 	 * @return {String} Authorization header string
 	 */
-	toHeader: (oauth_data, separator) => {
+	export function toHeader(oauth_data: any, separator?: string) {
 		separator = separator || ', ';
 		oauth_data = Utils.toSortedMap(oauth_data);
 
@@ -43,7 +38,7 @@ const Utils = {
 		let joinedParams = params.join(separator);
 
 		return `OAuth ${joinedParams}`;
-	},
+	}
 
 	/**
 	 * Build parameter string part of the signing string.
@@ -55,7 +50,7 @@ const Utils = {
 	 * @param  {Object} oauth_data
 	 * @return {Object} string Parameter string
 	 */
-	getParameterString: (request, oauth_data) => {
+	export function getParameterString(request: any, oauth_data: any) {
 		let parsedUrl = url.parse(request.url, true);
 		let data = Object.assign({}, parsedUrl.query, request.data || {}, oauth_data);
 		data = Utils.toSortedMap(data);
@@ -63,7 +58,7 @@ const Utils = {
 		return Utils.stringifyQueryMap(data, '&', '=', {
 			encodeURIComponent: Utils.percentEncode
 		});
-	},
+	}
 
 	/**
 	 * Build query string from {@link Map}
@@ -71,7 +66,7 @@ const Utils = {
 	 * This method should be the same as {@link querystring#stringify}
 	 * but accept a `Map<string, string|Array>` instead of {@link Object}
 	 *
-	 * @param {Map.<string, string|Array>} obj Input
+	 * @param {Object} obj Input
 	 * @param {string} [sep="&"] Separator between items
 	 * @param {string} [eq="="] Separator between key and value
 	 * @param {Object} [options]
@@ -79,7 +74,7 @@ const Utils = {
 	 * Key and value escaping algorithm
 	 * @return {string} Query string
 	 */
-	stringifyQueryMap: (obj, sep, eq, options) => {
+	export function stringifyQueryMap(obj: any, sep: string, eq: string, options: any) {
 		sep = sep || '&';
 		eq = eq || '=';
 		options = Object.assign({
@@ -103,7 +98,7 @@ const Utils = {
 		}
 
 		return out.join(sep);
-	},
+	}
 
 	/**
 	 * Strip query string from URL
@@ -111,9 +106,9 @@ const Utils = {
 	 * @param  {String} url URL to strip
 	 * @return {String} Stripped URL
 	 */
-	getBaseUrl: (url) => {
+	export function getBaseUrl(url: string) {
 		return url.split('?')[0];
-	},
+	}
 
 	/**
 	 * Return a ES6 Map with same key/value pairs as object.
@@ -124,7 +119,7 @@ const Utils = {
 	 * @param {Object} object Object to sort
 	 * @return {Map}
 	 */
-	toSortedMap: (object) => {
+	export function toSortedMap(object: any) {
 		let keys = Object.keys(object);
 		keys.sort();
 
@@ -135,7 +130,7 @@ const Utils = {
 		}
 
 		return out;
-	},
-};
+	}
+}
 
-module.exports = Utils;
+export default Utils;
